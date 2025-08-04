@@ -18,14 +18,17 @@ class DailyDive(Cog, name="DailyDive"):
 
     @Cog.listener()
     async def on_message(self, message: Message):
-        print(message.channel.name)
+        if message.channel != self.get_current_thread():
+            return
 
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
         await ctx.send(self.get_current_thread().name)
 
     def get_current_thread(self) -> Thread:
-        return self.dailydive_channel.threads[-1]
+        threads = self.dailydive_channel.threads
+        threads.sort(key=(lambda t: t.created_at.timestamp()))
+        return threads[-1]
 
 async def setup(client):
     await client.add_cog(DailyDive(client), guilds=client.guilds)
