@@ -4,7 +4,7 @@ services:
     image: mongo
     container_name: "fooberry-mongo"
     volumes:
-      - "fb_mongo_data:/data/db"
+      - "fb-mongo:/data/db"
     ports:
      - "27018"
     restart: always
