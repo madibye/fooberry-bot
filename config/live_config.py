@@ -12,11 +12,10 @@ class LiveConfig:
     but make sure not to set values directly without them being synced in the db!!
     """
 
-    __slots__ = ('dailydive_operator',)
+    __slots__ = ('dailydive_operator', 'dailydive_thread_data', 'dailydive_leaderboard_data')
 
     def __init__(self):
-        pass
-        self.dailydive_operator = 372599532975816715
+        self.dailydive_operator: int = 372599532975816715
 
     def load(self):
         for name in self.__slots__:
