@@ -18,6 +18,8 @@ services:
       - fb-mongo
     environment:
       FOOBERRY_TOKEN: ${FOOBERRY_TOKEN}
+    networks:
+      - fb-network
     restart: always
 
 volumes:
