@@ -2,13 +2,13 @@ version: '3.0'
 services:
   fooberry-mongo:
     image: mongo:4.2
-    container_name: "mongo"
+    container_name: "fooberry-mongo"
     volumes:
       - mongo_data:/data/db
     restart: always
 
   fooberry-bot:
-    container_name: "fb"
+    container_name: "fooberry-bot"
     build: .
     depends_on:
       - fooberry-mongo
