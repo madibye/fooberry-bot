@@ -18,7 +18,7 @@ class DailyDive(Cog, name="DailyDive"):
 
     @Cog.listener()
     async def on_message(self, message: Message):
-        pass
+        print(message.channel.name)
 
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
