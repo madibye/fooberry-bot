@@ -1,4 +1,4 @@
-from discord import Message, ForumChannel
+from discord import Message, ForumChannel, Thread
 from discord.ext.commands import command
 from discord.ext.commands import Cog
 from discord.ext.commands.context import Context
@@ -22,7 +22,10 @@ class DailyDive(Cog, name="DailyDive"):
 
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
-        print(self.dailydive_channel.threads)
+        await ctx.send(self.get_current_thread().name)
+
+    def get_current_thread(self) -> Thread:
+        return self.dailydive_channel.threads[-1]
 
 async def setup(client):
     await client.add_cog(DailyDive(client), guilds=client.guilds)
