@@ -6,7 +6,9 @@ services:
     volumes:
       - "fb-mongo:/data/db"
     ports:
-     - "27018"
+      - "27018"
+    networks:
+      - fb-network
     restart: always
 
   fb-bot:
@@ -16,7 +18,12 @@ services:
       - fb-mongo
     environment:
       - FOOBERRY_TOKEN=${FOOBERRY_TOKEN}
+    networks:
+      - fb-network
     restart: always
 
 volumes:
   fb-mongo:
+
+networks:
+  fb-network:
