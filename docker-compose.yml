@@ -1,17 +1,17 @@
 version: '3.0'
 services:
-  mongo:
+  fooberry-mongo:
     image: mongo:4.2
     container_name: "mongo"
     volumes:
       - mongo_data:/data/db
     restart: always
 
-  shiny-eevee-bot:
+  fooberry-bot:
     container_name: "fb"
     build: .
     depends_on:
-      - mongo
+      - fooberry-mongo
     environment:
       - FOOBERRY_TOKEN=${FOOBERRY_TOKEN}
     restart: always
