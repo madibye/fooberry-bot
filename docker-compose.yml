@@ -17,6 +17,3 @@ services:
       FOOBERRY_TOKEN: ${FOOBERRY_TOKEN}
       MONGO_URL: mongodb://fb-mongo:whocareslol@mongo:27017/
     restart: always
-
-volumes:
-  fb-mongo:
