@@ -1,22 +1,22 @@
 version: '3.0'
 services:
-  fooberry-mongo:
+  fb-mongo:
     image: mongo
-    container_name: "fooberry-mongo"
+    container_name: "fb-mongo"
     volumes:
       - "fb-mongo:/data/db"
     ports:
      - "27018"
     restart: always
 
-  fooberry-bot:
-    container_name: "fooberry-bot"
+  fb-bot:
+    container_name: "fb-bot"
     build: .
     depends_on:
-      - fooberry-mongo
+      - fb-mongo
     environment:
       - FOOBERRY_TOKEN=${FOOBERRY_TOKEN}
     restart: always
 
 volumes:
-  fb_mongo_data:
+  fb-mongo:
