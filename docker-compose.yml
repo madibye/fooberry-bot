@@ -4,7 +4,7 @@ services:
     image: mongo:4.2
     container_name: "fooberry-mongo"
     volumes:
-      - mongo_data:/data/fbdb
+      - fb_mongo_data:/data/fbdb
     restart: always
 
   fooberry-bot:
@@ -17,4 +17,4 @@ services:
     restart: always
 
 volumes:
-  mongo_data:
+  fb_mongo_data:
