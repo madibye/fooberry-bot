@@ -5,6 +5,8 @@ services:
     container_name: "fooberry-mongo"
     volumes:
       - "fb_mongo_data:/data/db"
+    ports:
+     - "27018:27017"
     restart: always
 
   fooberry-bot:
