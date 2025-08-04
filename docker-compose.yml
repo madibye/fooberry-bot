@@ -9,9 +9,6 @@ services:
       - "27017"
     networks:
       - fb-network
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "fb"
-      MONGO_INITDB_ROOT_PASSWORD: "wcl"
     restart: always
 
   fb-bot:
@@ -21,7 +18,7 @@ services:
       - fb-mongo
     environment:
       FOOBERRY_TOKEN: ${FOOBERRY_TOKEN}
-      MONGO_URL: "mongodb://fb:wcl@localhost:27017"
+      MONGO_URL: "mongodb://fb-mongo"
     networks:
       - fb-network
     restart: always
