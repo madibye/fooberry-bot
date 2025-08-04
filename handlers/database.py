@@ -4,7 +4,7 @@ from termcolor import cprint
 
 from config import *
 
-mongo_client = MongoClient(mongo_url)
+mongo_client = MongoClient(mongo_url, directConnection=True)
 database: Database = mongo_client.fooberry_bot  # Database
 db_config: Collection = database.config
 
