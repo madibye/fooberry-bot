@@ -6,7 +6,7 @@ load_dotenv()
 
 _true = ["true", "True", "t", "T", "1", "yes", "Yes", "YES"]
 
-mongo_url = os.environ.get("MONGO_URL", "mongodb://mongo:27018")
+mongo_url = os.environ.get("MONGO_URL", "mongodb://mongo/")
 
 activity_text = "v1.0.0"
 command_prefixes = ['!']
