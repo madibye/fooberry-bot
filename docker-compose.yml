@@ -8,8 +8,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: fb-mongo
+      MONGO_INITDB_ROOT_PASSWORD: whocareslol
     restart: always
 
   fb-bot:
@@ -18,13 +18,9 @@ services:
     depends_on:
       - fb-mongo
     environment:
-      - FOOBERRY_TOKEN=${FOOBERRY_TOKEN}
-    networks:
-      - fb-network
+      FOOBERRY_TOKEN: ${FOOBERRY_TOKEN}
+      MONGO_URL: mongodb://fb-mongo:whocareslol@mongo:27017/
     restart: always
 
 volumes:
   fb-mongo:
-
-networks:
-  fb-network:
