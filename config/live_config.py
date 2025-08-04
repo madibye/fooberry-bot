@@ -16,6 +16,8 @@ class LiveConfig:
 
     def __init__(self):
         self.dailydive_operator: int = 372599532975816715
+        self.dailydive_thread_data: dict = {}
+        self.dailydive_leaderboard_data: dict = {}
 
     def load(self):
         for name in self.__slots__:
