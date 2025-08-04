@@ -6,7 +6,7 @@ services:
     volumes:
       - "fb_mongo_data:/data/db"
     ports:
-     - "27018:27017"
+     - "27018"
     restart: always
 
   fooberry-bot:
