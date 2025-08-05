@@ -27,7 +27,7 @@ class DailyDive(Cog, name="DailyDive"):
     @Cog.listener()
     async def on_raw_reaction_add(self, event: RawReactionActionEvent):
         if event.message_author_id == event.user_id:
-            self.add_to_thread_data(event.channel_id, event.message_author_id)
+            self.add_to_thread_data(str(event.channel_id), str(event.message_author_id))
 
     def load_from_db(self):
         self.leaderboard_data = database.get_config_value('dailydive_leaderboard_data', {})
@@ -37,7 +37,7 @@ class DailyDive(Cog, name="DailyDive"):
         database.set_config_value('dailydive_leaderboard_data', self.leaderboard_data)
         database.set_config_value('dailydive_thread_data', self.thread_data)
 
-    def add_to_thread_data(self, ch: int, author: int):
+    def add_to_thread_data(self, ch: str, author: str):
         if ch in self.thread_data:
             if author not in self.thread_data[ch]:
                 self.thread_data[ch].append(author)
@@ -54,7 +54,7 @@ class DailyDive(Cog, name="DailyDive"):
                 self.add_leaderboard_points(author)
         self.update_to_db()
 
-    def add_leaderboard_points(self, author: int, pts: int = 1):
+    def add_leaderboard_points(self, author: str, pts: int = 1):
         if author not in self.leaderboard_data:
             self.leaderboard_data[author] = pts
         else:
@@ -65,7 +65,7 @@ class DailyDive(Cog, name="DailyDive"):
         if message.channel != self.get_current_thread() and self.message_condition(message.content):
             return
         self.load_from_db()
-        self.add_to_thread_data(message.channel.id, message.author.id)
+        self.add_to_thread_data(str(message.channel.id), str(message.author.id))
 
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
