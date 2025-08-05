@@ -1,7 +1,8 @@
 import random
 import re
 
-from discord import ForumChannel, Thread, RawReactionActionEvent, Guild, Embed
+from discord import ForumChannel, Thread, RawReactionActionEvent, Guild, Embed, Interaction
+from discord.app_commands import command as app_command
 from discord.ext.commands import command
 from discord.ext.commands import Cog
 from discord.ext.commands.context import Context
@@ -91,6 +92,15 @@ class DailyDive(Cog, name="DailyDive"):
             await ctx.send(embeds=entries)
         else:
             msg = paginator.Paginator(ctx, entries)
+            await msg.paginate()
+
+    @app_command(name="leaderboard", description="View the leaderboard for daily dives")
+    async def dailydive_leaderboard_ac(self, ctx: Interaction):
+        entries = await self.generate_leaderboard(ctx)
+        if len(entries) <= 1:
+            await ctx.response.send_message(embeds=entries, is_ephemeral=True)
+        else:
+            msg = paginator.Paginator(ctx, entries, is_ephemeral=True)
             await msg.paginate()
 
     @command(name="setextrapts", aliases=["setpoints"])

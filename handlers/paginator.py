@@ -1,4 +1,5 @@
 from discord import Interaction
+from discord.ext.commands import Context
 from discord.ui import button
 
 from handlers.component_globals import ComponentBase, TIMEOUT
@@ -12,20 +13,20 @@ class PaginatorButtons(ComponentBase):
     @button(label="Previous Page")
     async def previous_page_button(self, interaction: Interaction, _: button):
         if not self.paginator.check(interaction):
-            return await interaction.response.send_message("Error: There was an error performing this action. Please contact <@>.", ephemeral=True)
+            return await interaction.response.send_message("Error: There was an error performing this action. Please contact <@188875600373481472>.", ephemeral=True)
         await interaction.response.defer()
         return await self.paginator.backward(interaction)
 
     @button(label="Next Page")
     async def next_page_button(self, interaction: Interaction, _: button):
         if not self.paginator.check(interaction):
-            return await interaction.response.send_message("Error: There was an error performing this action. Please contact the Bot Team.", ephemeral=True)
+            return await interaction.response.send_message("Error: There was an error performing this action. Please contact <@188875600373481472>.", ephemeral=True)
         await interaction.response.defer()
         return await self.paginator.forward(interaction)
 
 
 class Paginator:
-    def __init__(self, ctx, entries: list, pages=True):
+    def __init__(self, ctx: Context | Interaction, entries: list, pages=True, is_ephemeral=False):
         self.ctx = ctx
         self.entries = entries
         self.max_pages = len(entries) - 1
@@ -34,10 +35,13 @@ class Paginator:
         self.channel = ctx.channel
         self.current = 0
         self.pages = pages
+        self.is_ephemeral = is_ephemeral
 
     async def setup(self, paginator_buttons):
         if self.pages:
             self.entries[0].set_footer(text=self.footer(page=1))
+        if self.is_ephemeral and self.ctx is Interaction:
+            return await self.ctx.response.send_message(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None, ephemeral=True)
         self.msg = await self.channel.send(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None)
 
     async def alter(self, page: int, interaction: Interaction):

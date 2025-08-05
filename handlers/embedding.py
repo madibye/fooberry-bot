@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from discord import Colour, Embed
+from discord import Colour, Embed, Interaction
 from discord.ext.commands import Context
 
 from handlers.paginator import Paginator
@@ -15,7 +15,7 @@ def get_time_remaining_str(time_remaining: timedelta):
     return f"{round(time_remaining.total_seconds())} {'seconds' if time_remaining.total_seconds() >= 2 else 'second'}"
 
 async def create_info_list_embed(
-    ctx: Context | None, title: str, description: str, field_name: str, value_list: list[str],
+    ctx: Context | Interaction | None, title: str, description: str, field_name: str, value_list: list[str],
     send_after: bool = False, error_msg: str = "Sorry, there are no entries to display.", code_blocks: bool = True,
     colour: Colour = Colour.green(), max_values_per_page: int = 25,
 ) -> list[Embed]:
@@ -51,7 +51,13 @@ async def create_info_list_embed(
             em = Paginator(ctx=ctx, entries=entries)
             await em.paginate()
         elif len(entries) == 1 and len(value_list) > 0:
-            await ctx.send(embed=entries[0], reference=ctx.message)
+            if ctx is Context:
+                await ctx.send(embed=entries[0], reference=ctx.message)
+            elif ctx is Interaction:
+                await ctx.response.send_message(embed=entries[0])
         else:
-            await ctx.send(error_msg, reference=ctx.message)
+            if ctx is Context:
+                await ctx.send(error_msg, reference=ctx.message)
+            elif ctx is Interaction:
+                await ctx.response.send_message(error_msg, ephemeral=True)
     return entries
