@@ -76,11 +76,11 @@ class DailyDive(Cog, name="DailyDive"):
         for user in users:
             i += 1
             score = self.leaderboard_data[user]
-            emote = "" if user in self.thread_data[str(self.get_current_thread().id)] else "✏️"
+            emote = "✅" if user in self.thread_data[str(self.get_current_thread().id)] else "✏️"
             if score > 0:
                 if placement != prev_score:
                     placement = i
-                value_list.append(f"- **#{placement} ・ {emote} <@{user}> ・ 🫧 {score}**")
+                value_list.append(f"- **#{placement}・{emote} <@{user}>・🫧 {score}**")
         return await embedding.create_info_list_embed(
             ctx,
             "## 🫧 Daily Dive Leaderboard",
