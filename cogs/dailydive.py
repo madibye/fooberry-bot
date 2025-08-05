@@ -69,7 +69,7 @@ class DailyDive(Cog, name="DailyDive"):
 
     @command(name="setextrapts", aliases=["setpoints", "points", "pts"])
     async def dailydive_set_extra_pts(self, _ctx: Context, user_id: str, points: int):
-        user_id = int(re.sub('[^0-9]','', user_id))
+        user_id = re.sub('[^0-9]','', user_id)
         if not 'extra_points' in self.thread_data:
             self.thread_data['extra_points'] = {}
         self.thread_data['extra_points'][user_id] = points
