@@ -91,12 +91,12 @@ class DailyDive(Cog, name="DailyDive"):
             self.thread_data['extra_points'][user_id] = points
         else:
             self.thread_data['extra_points'][user_id] += points
-
+        self.sync_leaderboard_with_thread_data()
 
     @command(name="resetthreaddata")
     async def dailydive_reset_thread_data(self, _ctx: Context):
         self.thread_data = {}
-        self.update_to_db()
+        self.sync_leaderboard_with_thread_data()
 
     def get_current_thread(self) -> Thread:
         threads = self.dailydive_channel.threads
