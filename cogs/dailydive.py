@@ -87,7 +87,7 @@ class DailyDive(Cog, name="DailyDive"):
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
         entries = await self.generate_leaderboard(ctx)
-        if len(entries) > 1:
+        if len(entries) <= 1:
             await ctx.send(embeds=entries)
         else:
             msg = paginator.Paginator(ctx, entries)
