@@ -1,21 +1,18 @@
-import random
-import re
-
-from discord import ForumChannel, Thread, RawReactionActionEvent, Guild, Embed, Interaction
+from discord import Embed, Interaction
 from discord.app_commands import command as app_command
-from discord.ext.commands import command
 from discord.ext.commands import Cog
+from discord.ext.commands import command
 from discord.ext.commands.context import Context
 
-import config
-from handlers import database, embedding, paginator
+from handlers import embedding, paginator
 from main import Fooberry
+
 
 class Help(Cog, name="Help"):
     def __init__(self, bot):
         self.bot: Fooberry = bot
 
-    @command(name="helpful", aliases=["h", "help"])
+    @command(name="help", aliases=["h"])
     async def help(self, ctx: Context):
         entries = await self.generate_help(ctx)
         if len(entries) <= 1:

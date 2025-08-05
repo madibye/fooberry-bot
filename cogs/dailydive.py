@@ -133,7 +133,7 @@ class DailyDive(Cog, name="DailyDive"):
         else:
             self.leaderboard_data[author] += pts
 
-    async def generate_leaderboard(self, ctx: Context) -> list[Embed]:
+    async def generate_leaderboard(self, ctx: Context | Interaction) -> list[Embed]:
         self.load_from_db()
         self.sync_leaderboard_with_thread_data()
         value_list = []
