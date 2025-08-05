@@ -65,6 +65,8 @@ class Paginator:
         return f"Page {page} of {self.max_pages + 1}"
 
     def check(self, interaction):
+        if isinstance(self.ctx, Interaction):
+            return True
         if interaction.message.id != self.msg.id:
             return False
         return True
