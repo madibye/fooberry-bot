@@ -22,4 +22,5 @@ bot_application_id = 1401926435286941747
 discord_cogs = [
     "cogs.admin",
     "cogs.dailydive",
+    "cogs.help",
 ]

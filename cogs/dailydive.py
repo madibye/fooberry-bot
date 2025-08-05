@@ -31,6 +31,76 @@ class DailyDive(Cog, name="DailyDive"):
         if event.channel_id == self.get_current_thread().id and event.message_author_id == event.user_id:
             self.add_to_thread_data(str(event.channel_id), str(event.message_author_id))
 
+    @command(name="leaderboard", aliases=["top", "streaks", "dd"])
+    async def dailydive_leaderboard(self, ctx: Context):
+        entries = await self.generate_leaderboard(ctx)
+        if len(entries) <= 1:
+            await ctx.send(embeds=entries)
+        else:
+            msg = paginator.Paginator(ctx, entries)
+            await msg.paginate()
+
+    @app_command(name="leaderboard", description="View the leaderboard for daily dives")
+    async def dailydive_leaderboard_ac(self, ctx: Interaction):
+        entries = await self.generate_leaderboard(ctx)
+        if len(entries) <= 1:
+            await ctx.response.send_message(embeds=entries, is_ephemeral=True)
+        else:
+            msg = paginator.Paginator(ctx, entries, is_ephemeral=True)
+            await msg.paginate()
+
+    @command(name="setextrapts", aliases=["setpoints"])
+    async def dailydive_set_extra_pts(self, ctx: Context, user_id: str, points: int):
+        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
+            return
+        user_id = re.sub('[^0-9]','', user_id)
+        if not 'extra_points' in self.thread_data:
+            self.thread_data['extra_points'] = {}
+        self.thread_data['extra_points'][user_id] = points
+        self.sync_leaderboard_with_thread_data()
+        await ctx.message.add_reaction("✅")
+
+    @command(name="addextrapts", aliases=["addpts", "add"])
+    async def dailydive_add_extra_pts(self, ctx: Context, user_id: str, points: int):
+        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
+            return
+        user_id = re.sub('[^0-9]','', user_id)
+        if not 'extra_points' in self.thread_data:
+            self.thread_data['extra_points'] = {}
+        if user_id not in self.thread_data['extra_points']:
+            self.thread_data['extra_points'][user_id] = points
+        else:
+            self.thread_data['extra_points'][user_id] += points
+        self.sync_leaderboard_with_thread_data()
+        await ctx.message.add_reaction("✅")
+
+    @command(name="subtractextrapts", aliases=["minuspts", "subtractpts", "minus", "subtract", "removepts", "rm"])
+    async def dailydive_subtract_extra_pts(self, ctx: Context, user_id: str, points: int):
+        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
+            return
+        user_id = re.sub('[^0-9]','', user_id)
+        if not 'extra_points' in self.thread_data:
+            self.thread_data['extra_points'] = {}
+        if user_id not in self.thread_data['extra_points']:
+            self.thread_data['extra_points'][user_id] = -points
+        else:
+            self.thread_data['extra_points'][user_id] -= points
+        self.sync_leaderboard_with_thread_data()
+        await ctx.message.add_reaction("✅")
+
+    @command(name="resetthreaddata")
+    async def dailydive_reset_thread_data(self, ctx: Context):
+        if not ctx.author.id in [config.madi_id]:
+            return
+        self.thread_data = {}
+        self.sync_leaderboard_with_thread_data()
+        await ctx.message.add_reaction("✅")
+
+    def get_current_thread(self) -> Thread:
+        threads = self.dailydive_channel.threads
+        threads.sort(key=(lambda t: t.created_at.timestamp()))
+        return threads[-1]
+
     def load_from_db(self):
         self.leaderboard_data = database.get_config_value('dailydive_leaderboard_data', {})
         self.thread_data = database.get_config_value('dailydive_thread_data', {})
@@ -92,72 +162,6 @@ class DailyDive(Cog, name="DailyDive"):
             False,
             max_values_per_page=10,
         )
-
-    @command(name="leaderboard", aliases=["top", "streaks", "dd"])
-    async def dailydive_leaderboard(self, ctx: Context):
-        entries = await self.generate_leaderboard(ctx)
-        if len(entries) <= 1:
-            await ctx.send(embeds=entries)
-        else:
-            msg = paginator.Paginator(ctx, entries)
-            await msg.paginate()
-
-    @app_command(name="leaderboard", description="View the leaderboard for daily dives")
-    async def dailydive_leaderboard_ac(self, ctx: Interaction):
-        entries = await self.generate_leaderboard(ctx)
-        if len(entries) <= 1:
-            await ctx.response.send_message(embeds=entries, is_ephemeral=True)
-        else:
-            msg = paginator.Paginator(ctx, entries, is_ephemeral=True)
-            await msg.paginate()
-
-    @command(name="setextrapts", aliases=["setpoints"])
-    async def dailydive_set_extra_pts(self, ctx: Context, user_id: str, points: int):
-        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
-            return
-        user_id = re.sub('[^0-9]','', user_id)
-        if not 'extra_points' in self.thread_data:
-            self.thread_data['extra_points'] = {}
-        self.thread_data['extra_points'][user_id] = points
-        self.sync_leaderboard_with_thread_data()
-
-    @command(name="addextrapts", aliases=["addpts", "add"])
-    async def dailydive_add_extra_pts(self, ctx: Context, user_id: str, points: int):
-        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
-            return
-        user_id = re.sub('[^0-9]','', user_id)
-        if not 'extra_points' in self.thread_data:
-            self.thread_data['extra_points'] = {}
-        if user_id not in self.thread_data['extra_points']:
-            self.thread_data['extra_points'][user_id] = points
-        else:
-            self.thread_data['extra_points'][user_id] += points
-        self.sync_leaderboard_with_thread_data()
-
-    @command(name="subtractextrapts", aliases=["minuspts", "subtractpts", "minus", "subtract", "removepts", "rm"])
-    async def dailydive_subtract_extra_pts(self, ctx: Context, user_id: str, points: int):
-        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
-            return
-        user_id = re.sub('[^0-9]','', user_id)
-        if not 'extra_points' in self.thread_data:
-            self.thread_data['extra_points'] = {}
-        if user_id not in self.thread_data['extra_points']:
-            self.thread_data['extra_points'][user_id] = -points
-        else:
-            self.thread_data['extra_points'][user_id] -= points
-        self.sync_leaderboard_with_thread_data()
-
-    @command(name="resetthreaddata")
-    async def dailydive_reset_thread_data(self, ctx: Context):
-        if not ctx.author.id in [config.madi_id]:
-            return
-        self.thread_data = {}
-        self.sync_leaderboard_with_thread_data()
-
-    def get_current_thread(self) -> Thread:
-        threads = self.dailydive_channel.threads
-        threads.sort(key=(lambda t: t.created_at.timestamp()))
-        return threads[-1]
 
 async def setup(client):
     await client.add_cog(DailyDive(client), guilds=client.guilds)
