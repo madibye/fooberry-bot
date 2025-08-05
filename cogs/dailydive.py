@@ -26,7 +26,7 @@ class DailyDive(Cog, name="DailyDive"):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, event: RawReactionActionEvent):
-        if event.message_author_id == event.user_id:
+        if event.channel_id == self.get_current_thread().id and event.message_author_id == event.user_id:
             self.add_to_thread_data(str(event.channel_id), str(event.message_author_id))
 
     def load_from_db(self):
@@ -51,7 +51,8 @@ class DailyDive(Cog, name="DailyDive"):
             for author in self.thread_data[ch]:
                 if ch == 'extra_points':
                     self.add_leaderboard_points(author, self.thread_data[ch][author])
-                self.add_leaderboard_points(author)
+                else:
+                    self.add_leaderboard_points(author)
         self.update_to_db()
 
     def add_leaderboard_points(self, author: str, pts: int = 1):
@@ -60,16 +61,11 @@ class DailyDive(Cog, name="DailyDive"):
         else:
             self.leaderboard_data[author] += pts
 
-    @Cog.listener()
-    async def on_message(self, message: Message):
-        if message.channel != self.get_current_thread() and self.message_condition(message.content):
-            return
-        self.load_from_db()
-        self.add_to_thread_data(str(message.channel.id), str(message.author.id))
-
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
-        await ctx.send(str(self.leaderboard_data))
+        self.load_from_db()
+        print("Thread Data: %s" % str(self.thread_data))
+        print("Leaderboard Data: %s" % str(self.leaderboard_data))
 
     @command(name="setextrapts", aliases=["setpoints", "points", "pts"])
     async def dailydive_set_extra_pts(self, _ctx: Context, user_id: str, points: int):
@@ -78,10 +74,6 @@ class DailyDive(Cog, name="DailyDive"):
             self.thread_data['extra_points'] = {}
         self.thread_data['extra_points'][user_id] = points
         self.sync_leaderboard_with_thread_data()
-
-    @staticmethod
-    def message_condition(_message: str) -> bool:
-        return True
 
     def get_current_thread(self) -> Thread:
         threads = self.dailydive_channel.threads
