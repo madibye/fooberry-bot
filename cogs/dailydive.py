@@ -1,12 +1,11 @@
-from pyexpat.errors import messages
+import re
 
-from discord import Message, ForumChannel, Thread
+from discord import Message, ForumChannel, Thread, RawReactionActionEvent, Guild
 from discord.ext.commands import command
 from discord.ext.commands import Cog
 from discord.ext.commands.context import Context
 
 import config
-from config.live_config import lc
 from handlers import database
 from main import Fooberry
 
@@ -15,13 +14,20 @@ class DailyDive(Cog, name="DailyDive"):
     def __init__(self, bot):
         self.bot: Fooberry = bot
         self.dailydive_channel: ForumChannel | None = None
+        self.guild: Guild | None = None
         self.leaderboard_data: dict = {}
         self.thread_data: dict = {}
 
     @Cog.listener()
     async def on_ready(self):
         self.dailydive_channel = self.bot.get_channel(config.dailydive_channel_id)
+        self.guild = self.dailydive_channel.guild
         self.load_from_db()
+
+    @Cog.listener()
+    async def on_raw_reaction_add(self, event: RawReactionActionEvent):
+        if event.message_author_id == event.user_id:
+            self.add_to_thread_data(event.channel_id, event.message_author_id)
 
     def load_from_db(self):
         self.leaderboard_data = database.get_config_value('dailydive_leaderboard_data', {})
@@ -37,18 +43,22 @@ class DailyDive(Cog, name="DailyDive"):
                 self.thread_data[ch].append(author)
         else:
             self.thread_data[ch] = [author]
-        self.update_to_db()
+        self.sync_leaderboard_with_thread_data()
 
     def sync_leaderboard_with_thread_data(self):
-        new_leaderboard_data = {}
+        self.leaderboard_data = {}
         for ch in self.thread_data:
             for author in self.thread_data[ch]:
-                if author not in new_leaderboard_data:
-                    new_leaderboard_data[author] = 1
-                else:
-                    new_leaderboard_data[author] += 1
-        self.leaderboard_data = new_leaderboard_data
+                if ch == 'extra_points':
+                    self.add_leaderboard_points(author, self.thread_data[ch][author])
+                self.add_leaderboard_points(author)
         self.update_to_db()
+
+    def add_leaderboard_points(self, author: int, pts: int = 1):
+        if author not in self.leaderboard_data:
+            self.leaderboard_data[author] = pts
+        else:
+            self.leaderboard_data[author] += pts
 
     @Cog.listener()
     async def on_message(self, message: Message):
@@ -59,9 +69,16 @@ class DailyDive(Cog, name="DailyDive"):
 
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
-        await ctx.send(str(self.thread_data))
+        await ctx.send(str(self.leaderboard_data))
 
-    def message_condition(self, _message: str) -> bool:
+    @command(name="setextrapts", aliases=["setpoints", "points", "pts"])
+    async def dailydive_set_extra_pts(self, _ctx: Context, user_id: str, points: int):
+        user_id = int(re.sub('[^0-9]','', user_id))
+        self.thread_data['extra_points'][user_id] = points
+        self.sync_leaderboard_with_thread_data()
+
+    @staticmethod
+    def message_condition(_message: str) -> bool:
         return True
 
     def get_current_thread(self) -> Thread:
