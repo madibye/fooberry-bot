@@ -79,7 +79,7 @@ class DailyDive(Cog, name="DailyDive"):
             emote = "✅" if user in self.thread_data[str(self.get_current_thread().id)] else "✏️"
             if score <= 0:
                 continue
-            if placement != prev_score:
+            if score != prev_score:
                 placement = i
             prev_score = score
             value_list.append(f"- **#{placement}・{emote}・<@{user}>・🫧 {score}**")
