@@ -70,23 +70,21 @@ class DailyDive(Cog, name="DailyDive"):
         users = list(self.leaderboard_data.keys())
         random.shuffle(users)
         users.sort(key=lambda u: int(self.leaderboard_data[u]), reverse=True)
-        i = 0
         placement = 0
         prev_score = 999999
         for user in users:
-            i += 1
             score = self.leaderboard_data[user]
             emote = "✅" if user in self.thread_data[str(self.get_current_thread().id)] else "✏️"
             if score <= 0:
                 continue
             if score != prev_score:
-                placement = i
+                placement += 1
             prev_score = score
             value_list.append(f"- **#{placement}・{emote}・<@{user}>・🫧 {score}**")
         return await embedding.create_info_list_embed(
             ctx,
             "",
-            "## 🫧 Daily Dive Leaderboard",
+            "## 🫧  Daily Dive Leaderboard",
             "",
             value_list,
             False,
@@ -114,7 +112,9 @@ class DailyDive(Cog, name="DailyDive"):
             await msg.paginate()
 
     @command(name="setextrapts", aliases=["setpoints"])
-    async def dailydive_set_extra_pts(self, _ctx: Context, user_id: str, points: int):
+    async def dailydive_set_extra_pts(self, ctx: Context, user_id: str, points: int):
+        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
+            return
         user_id = re.sub('[^0-9]','', user_id)
         if not 'extra_points' in self.thread_data:
             self.thread_data['extra_points'] = {}
@@ -122,7 +122,9 @@ class DailyDive(Cog, name="DailyDive"):
         self.sync_leaderboard_with_thread_data()
 
     @command(name="addextrapts", aliases=["addpts", "add"])
-    async def dailydive_add_extra_pts(self, _ctx: Context, user_id: str, points: int):
+    async def dailydive_add_extra_pts(self, ctx: Context, user_id: str, points: int):
+        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
+            return
         user_id = re.sub('[^0-9]','', user_id)
         if not 'extra_points' in self.thread_data:
             self.thread_data['extra_points'] = {}
@@ -133,7 +135,9 @@ class DailyDive(Cog, name="DailyDive"):
         self.sync_leaderboard_with_thread_data()
 
     @command(name="subtractextrapts", aliases=["minuspts", "subtractpts", "minus", "subtract", "removepts", "rm"])
-    async def dailydive_subtract_extra_pts(self, _ctx: Context, user_id: str, points: int):
+    async def dailydive_subtract_extra_pts(self, ctx: Context, user_id: str, points: int):
+        if not ctx.author.id in [config.madi_id, database.get_config_value('dailydive_operator', 0)]:
+            return
         user_id = re.sub('[^0-9]','', user_id)
         if not 'extra_points' in self.thread_data:
             self.thread_data['extra_points'] = {}
@@ -144,7 +148,9 @@ class DailyDive(Cog, name="DailyDive"):
         self.sync_leaderboard_with_thread_data()
 
     @command(name="resetthreaddata")
-    async def dailydive_reset_thread_data(self, _ctx: Context):
+    async def dailydive_reset_thread_data(self, ctx: Context):
+        if not ctx.author.id in [config.madi_id]:
+            return
         self.thread_data = {}
         self.sync_leaderboard_with_thread_data()
 
