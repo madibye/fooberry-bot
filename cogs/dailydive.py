@@ -94,6 +94,17 @@ class DailyDive(Cog, name="DailyDive"):
             self.thread_data['extra_points'][user_id] += points
         self.sync_leaderboard_with_thread_data()
 
+    @command(name="addextrapts", aliases=["minuspts", "subtractpts", "minus", "subtract"])
+    async def dailydive_subtract_extra_pts(self, _ctx: Context, user_id: str, points: int):
+        user_id = re.sub('[^0-9]','', user_id)
+        if not 'extra_points' in self.thread_data:
+            self.thread_data['extra_points'] = {}
+        if user_id not in self.thread_data['extra_points']:
+            self.thread_data['extra_points'][user_id] = -points
+        else:
+            self.thread_data['extra_points'][user_id] -= points
+        self.sync_leaderboard_with_thread_data()
+
     @command(name="resetthreaddata")
     async def dailydive_reset_thread_data(self, _ctx: Context):
         self.thread_data = {}
