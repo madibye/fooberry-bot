@@ -1,3 +1,4 @@
+import random
 import re
 
 from discord import Message, ForumChannel, Thread, RawReactionActionEvent, Guild
@@ -66,7 +67,8 @@ class DailyDive(Cog, name="DailyDive"):
         self.load_from_db()
         value_list = []
         users = list(self.leaderboard_data.keys())
-        users.sort(key=lambda u: int(self.leaderboard_data[u]))
+        random.shuffle(users)
+        users.sort(key=lambda u: int(self.leaderboard_data[u]), reverse=True)
         for user in users:
             if self.leaderboard_data[user] > 0:
                 value_list.append(f"<@{user}>: {self.leaderboard_data[user]}")
