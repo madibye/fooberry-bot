@@ -22,7 +22,7 @@ class Help(Cog, name="Help"):
             await msg.paginate()
 
     @app_command(name="help", description="View helpful info for FooberryBot.")
-    async def help(self, ctx: Interaction):
+    async def help_ac(self, ctx: Interaction):
         entries = await self.generate_help(ctx)
         if len(entries) <= 1:
             await ctx.response.send_message(embeds=entries, ephemeral=True)
