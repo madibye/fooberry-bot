@@ -70,13 +70,21 @@ class DailyDive(Cog, name="DailyDive"):
         users = list(self.leaderboard_data.keys())
         random.shuffle(users)
         users.sort(key=lambda u: int(self.leaderboard_data[u]), reverse=True)
+        i = 0
+        placement = 0
+        prev_score = 999999
         for user in users:
-            if self.leaderboard_data[user] > 0:
-                value_list.append(f"<@{user}>: {self.leaderboard_data[user]}")
+            i += 1
+            score = self.leaderboard_data[user]
+            emote = "" if user in self.thread_data[str(self.get_current_thread().id)] else "✏️"
+            if score > 0:
+                if placement != prev_score:
+                    placement = i
+                value_list.append(f"- **#{placement} ・ {emote} <@{user}> ・ 🫧 {score}**")
         return await embedding.create_info_list_embed(
             ctx,
-            "Daily Dive Leaderboard",
-            "Number of days each user has responded to the daily dive.\nSelf-react to get your response counted!",
+            "## 🫧 Daily Dive Leaderboard",
+            "",
             "",
             value_list,
             False,
