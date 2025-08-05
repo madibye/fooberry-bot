@@ -15,7 +15,7 @@ class Help(Cog, name="Help"):
     def __init__(self, bot):
         self.bot: Fooberry = bot
 
-    @command(name="help")
+    @command(name="helpful", aliases=["h", "help"])
     async def help(self, ctx: Context):
         entries = await self.generate_help(ctx)
         if len(entries) <= 1:
