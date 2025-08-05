@@ -6,7 +6,7 @@ from discord.ext.commands import Cog
 from discord.ext.commands.context import Context
 
 import config
-from handlers import database
+from handlers import database, embedding
 from main import Fooberry
 
 
@@ -64,8 +64,10 @@ class DailyDive(Cog, name="DailyDive"):
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
         self.load_from_db()
-        print("Thread Data: %s" % str(self.thread_data))
-        print("Leaderboard Data: %s" % str(self.leaderboard_data))
+        value_list = []
+        for user in self.leaderboard_data:
+            value_list.append(f"<@{user}>: {self.leaderboard_data[user]}")
+        await embedding.create_info_list_embed(ctx, "Daily Dive Leaderboard", "Test idk what to put here yet", "Here either", value_list, True)
 
     @command(name="setextrapts", aliases=["setpoints", "points", "pts"])
     async def dailydive_set_extra_pts(self, _ctx: Context, user_id: str, points: int):
