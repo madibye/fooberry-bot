@@ -74,13 +74,24 @@ class DailyDive(Cog, name="DailyDive"):
                 value_list.append(f"<@{user}>: {self.leaderboard_data[user]}")
         await embedding.create_info_list_embed(ctx, "Daily Dive Leaderboard", "Number of days each user has responded to the daily dive.\nSelf-react to get your response counted!", "", value_list, True, "If you're seeing this, please ask Madi about it.", False)
 
-    @command(name="setextrapts", aliases=["setpoints", "points", "pts"])
+    @command(name="setextrapts", aliases=["setpoints"])
     async def dailydive_set_extra_pts(self, _ctx: Context, user_id: str, points: int):
         user_id = re.sub('[^0-9]','', user_id)
         if not 'extra_points' in self.thread_data:
             self.thread_data['extra_points'] = {}
         self.thread_data['extra_points'][user_id] = points
         self.sync_leaderboard_with_thread_data()
+
+    @command(name="addextrapts", aliases=["addpts", "add"])
+    async def dailydive_add_extra_pts(self, _ctx: Context, user_id: str, points: int):
+        user_id = re.sub('[^0-9]','', user_id)
+        if not 'extra_points' in self.thread_data:
+            self.thread_data['extra_points'] = {}
+        if user_id not in self.thread_data['extra_points']:
+            self.thread_data['extra_points'][user_id] = points
+        else:
+            self.thread_data['extra_points'][user_id] += points
+
 
     @command(name="resetthreaddata")
     async def dailydive_reset_thread_data(self, _ctx: Context):
