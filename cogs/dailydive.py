@@ -65,6 +65,7 @@ class DailyDive(Cog, name="DailyDive"):
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
         self.load_from_db()
+        self.sync_leaderboard_with_thread_data()
         value_list = []
         users = list(self.leaderboard_data.keys())
         random.shuffle(users)
