@@ -15,6 +15,15 @@ class Help(Cog, name="Help"):
     def __init__(self, bot):
         self.bot: Fooberry = bot
 
+    @command(name="help")
+    async def help(self, ctx: Context):
+        entries = await self.generate_help(ctx)
+        if len(entries) <= 1:
+            await ctx.send(embeds=entries, ephemeral=True)
+        else:
+            msg = paginator.Paginator(ctx, entries)
+            await msg.paginate()
+
     @app_command(name="help", description="View helpful info for FooberryBot.")
     async def help(self, ctx: Interaction):
         entries = await self.generate_help(ctx)
