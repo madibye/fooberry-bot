@@ -41,13 +41,17 @@ class Paginator:
         if self.pages:
             self.entries[0].set_footer(text=self.footer(page=1))
         if self.is_ephemeral and self.ctx is Interaction:
-            return await self.ctx.response.send_message(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None, ephemeral=True)
-        self.msg = await self.channel.send(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None)
+            self.msg = await self.ctx.response.send_message(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None, ephemeral=True)
+        else:
+            self.msg = await self.channel.send(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None)
 
     async def alter(self, page: int, interaction: Interaction):
         if self.pages:
             self.entries[page].set_footer(text=self.footer(page=page+1))
-        await interaction.message.edit(embed=self.entries[page])
+        if self.is_ephemeral and self.ctx is Interaction:
+            await self.ctx.edit_original_response(embed=self.entries[page])
+        else:
+            await interaction.message.edit(embed=self.entries[page])
 
     async def backward(self, interaction):
         self.current = self.max_pages if self.current == 0 else self.current - 1
