@@ -44,9 +44,9 @@ class DailyDive(Cog, name="DailyDive"):
     async def dailydive_leaderboard_ac(self, ctx: Interaction):
         entries = await self.generate_leaderboard(ctx)
         if len(entries) <= 1:
-            await ctx.response.send_message(embeds=entries, is_ephemeral=True)
+            await ctx.response.send_message(embeds=entries, ephemeral=True)
         else:
-            msg = paginator.Paginator(ctx, entries, is_ephemeral=True)
+            msg = paginator.Paginator(ctx, entries, ephemeral=True)
             await msg.paginate()
 
     @command(name="setextrapts", aliases=["setpoints"])

@@ -15,13 +15,13 @@ class Help(Cog, name="Help"):
     def __init__(self, bot):
         self.bot: Fooberry = bot
 
-    @app_command(name="help", description="View the leaderboard for daily dives")
-    async def dailydive_leaderboard_ac(self, ctx: Interaction):
+    @app_command(name="help", description="View helpful info for FooberryBot.")
+    async def help(self, ctx: Interaction):
         entries = await self.generate_help(ctx)
         if len(entries) <= 1:
-            await ctx.response.send_message(embeds=entries, is_ephemeral=True)
+            await ctx.response.send_message(embeds=entries, ephemeral=True)
         else:
-            msg = paginator.Paginator(ctx, entries, is_ephemeral=True)
+            msg = paginator.Paginator(ctx, entries, ephemeral=True)
             await msg.paginate()
 
     async def generate_help(self, ctx: Context | Interaction) -> list[Embed]:

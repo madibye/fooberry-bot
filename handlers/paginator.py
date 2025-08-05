@@ -26,7 +26,7 @@ class PaginatorButtons(ComponentBase):
 
 
 class Paginator:
-    def __init__(self, ctx: Context | Interaction, entries: list, pages=True, is_ephemeral=False):
+    def __init__(self, ctx: Context | Interaction, entries: list, pages=True, ephemeral=False):
         self.ctx = ctx
         self.entries = entries
         self.max_pages = len(entries) - 1
@@ -35,13 +35,13 @@ class Paginator:
         self.channel = ctx.channel
         self.current = 0
         self.pages = pages
-        self.is_ephemeral = is_ephemeral
+        self.ephemeral = ephemeral
 
     async def setup(self, paginator_buttons):
         if self.pages:
             self.entries[0].set_footer(text=self.footer(page=1))
         if isinstance(self.ctx, Interaction):
-            self.msg = await self.ctx.response.send_message(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None, ephemeral=self.is_ephemeral)
+            self.msg = await self.ctx.response.send_message(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None, ephemeral=self.ephemeral)
         else:
             self.msg = await self.channel.send(embed=self.entries[0], view=paginator_buttons if self.max_pages != 0 else None)
 
