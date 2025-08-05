@@ -51,13 +51,13 @@ async def create_info_list_embed(
             em = Paginator(ctx=ctx, entries=entries)
             await em.paginate()
         elif len(entries) == 1 and len(value_list) > 0:
-            if ctx is Context:
+            if isinstance(ctx, Context):
                 await ctx.send(embed=entries[0], reference=ctx.message)
-            elif ctx is Interaction:
+            elif isinstance(ctx, Interaction):
                 await ctx.response.send_message(embed=entries[0])
         else:
-            if ctx is Context:
+            if isinstance(ctx, Context):
                 await ctx.send(error_msg, reference=ctx.message)
-            elif ctx is Interaction:
+            elif isinstance(ctx, Context):
                 await ctx.response.send_message(error_msg, ephemeral=True)
     return entries
