@@ -15,8 +15,9 @@ def get_time_remaining_str(time_remaining: timedelta):
     return f"{round(time_remaining.total_seconds())} {'seconds' if time_remaining.total_seconds() >= 2 else 'second'}"
 
 async def create_info_list_embed(
-    ctx: Context, title: str, description: str, field_name: str, value_list: list[str],
-    send_after: bool = False, error_msg: str = "Sorry, there are no entries to display.", code_blocks: bool = True, colour: Colour = Colour.green(),
+    ctx: Context | None, title: str, description: str, field_name: str, value_list: list[str],
+    send_after: bool = False, error_msg: str = "Sorry, there are no entries to display.", code_blocks: bool = True,
+    colour: Colour = Colour.green(), max_values_per_page: int = 25,
 ) -> list[Embed]:
     """
     :param ctx: Discord context object, should always be passed for the purposes of being able to send messages within the function
@@ -30,12 +31,13 @@ async def create_info_list_embed(
     :param error_msg: Error message that will display if len(value_list) == 0.
     :param code_blocks: Toggles whether or not the value list will be displayed in a code block.
     :param colour: Embed colour
+    :param max_values_per_page: Amount of values that'll be listed per page.
     :return: Returns a list of embeds created
     """
     entries: list[Embed] = [Embed(title=title, description=description, colour=colour)]
     words = []
     for word in value_list:
-        if len(entries[-1]) + len(' \n'.join(words)) + len(word) < 1024 and len(words) < 25:
+        if len(entries[-1]) + len(' \n'.join(words)) + len(word) < 1024 and len(words) < max_values_per_page:
             words.append(word)
         else:
             joined_list = " \n".join(words)
@@ -44,7 +46,7 @@ async def create_info_list_embed(
             entries.append(Embed(title=title, description=description, colour=colour))
     joined_list = " \n".join(words)
     entries[-1].add_field(name=field_name, value=f"{'```' if code_blocks else ''}{joined_list}{'```' if code_blocks else ''}")
-    if send_after:
+    if send_after and ctx:
         if len(entries) > 1 and len(value_list) > 0:
             em = Paginator(ctx=ctx, entries=entries)
             await em.paginate()
