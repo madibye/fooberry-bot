@@ -60,6 +60,8 @@ class DailyDive(Cog, name="DailyDive"):
             self.leaderboard_data[author] = pts
         else:
             self.leaderboard_data[author] += pts
+        if self.leaderboard_data[author] == 0:
+            self.leaderboard_data.pop(author)
 
     @command(name="leaderboard", aliases=["top", "streaks", "dd"])
     async def dailydive_leaderboard(self, ctx: Context):
@@ -67,7 +69,7 @@ class DailyDive(Cog, name="DailyDive"):
         value_list = []
         for user in self.leaderboard_data:
             value_list.append(f"<@{user}>: {self.leaderboard_data[user]}")
-        await embedding.create_info_list_embed(ctx, "Daily Dive Leaderboard", "Number of days each user has responded to the daily dive. Self-react to get your response counted!", "", value_list, True, "If you're seeing this, please ask Madi about it.", False)
+        await embedding.create_info_list_embed(ctx, "Daily Dive Leaderboard", "Number of days each user has responded to the daily dive.\nSelf-react to get your response counted!", "", value_list, True, "If you're seeing this, please ask Madi about it.", False)
 
     @command(name="setextrapts", aliases=["setpoints", "points", "pts"])
     async def dailydive_set_extra_pts(self, _ctx: Context, user_id: str, points: int):
